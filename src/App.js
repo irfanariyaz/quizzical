@@ -1,104 +1,161 @@
 import React from "react"
 import blob from "./images/blobs.png"
 import blob1 from "./images/blobsblue.png"
-import Question from "./Question"
-// import data from "./data"
+import blob_small from "./images/blob5.png"
+import blob1_small from "./images/blob5blue.png"
+
 import { nanoid, random } from 'nanoid'
 
 
 export default function App() {
-    const [startquiz, setStartquiz] = React.useState(false)
+    const [start, setStart] = React.useState(false)
     const [questions, setQuestions] = React.useState([])
-    const [formdata, setFormdata] = React.useState({})
-    const correct_answers = questions.map(elem=>elem.correct_answer)
+    const [score, setScore] = React.useState(0)
+    const [findscore, setfindScore] = React.useState(false)
+    const [formData, setFormData] = React.useState([])
+    const [nextgame,setNextgame]=React.useState(false)
+let eff=0
+    const correct_answers = questions.map(elem => elem.correct_answer)
 
-    function startQuiz() {
-        setStartquiz(true)
-        const newState = questions.map((item,index )=>{
-            const ran =Math.floor(Math.random() * 4)
-            item.incorrect_answers.splice(ran,0,item.correct_answer)
-          const idval = index+1
-            console.log(item.incorrect_answers)
-            return {
-                ...item,
-                id:nanoid()
-            }
-        })
-        setQuestions(newState)
-      
-        
-       
-    }
-   
     React.useEffect(function () {
-        console.log("Effect ran")
+        eff= eff+1
+        console.log("Effect ran",eff)
         fetch("https://opentdb.com/api.php?amount=5&type=multiple")
             .then(res => res.json())
             .then(data => setQuestions(data.results))
             
-        
+    }, [nextgame])
 
-    }, [])
-    
-    function handlechange(event) {
-        const { name, value } = event.target
-        setFormdata(prevFormData => {
+    function startQuiz() {
+        setStart(true)
+        const newState = questions.map((item) => {
+            const ran = Math.floor(Math.random() * 4)
+            item.incorrect_answers.splice(ran, 0, item.correct_answer)
             return {
-                ...prevFormData,
-                [name]: value
-  }   
-}) 
-console.log(correct_answers)
-}
-function collectScore(e){
-    e.preventDefault();
-    console.log("form submitted")
-    console.log(formdata)
-    let count =0
-    const hasVal= Object.values(formdata)
-    for (let i=0;i<5;i++){
-        if(correct_answers.includes(hasVal[i]))
-        count = count+1
+                ...item,
+                id: nanoid(),
+
+            }
+        })
+        setQuestions(newState)
+       
     }
-    console.log(correct_answers)
-    console.log(`you answered ${count} answers correct`)
-}
-    const questelements = questions.map(prev =>
-        (
-            <Question
-                key={prev.id}
-                quest={prev.question}
-                correct={prev.correct_answer}
-                choices={prev.incorrect_answers}
-                 id={prev.id}
-                // formdata= {formdata}
-                handleChange={handlechange}
-            />
-        )
-        )
-   return (
+    console.log("findscore",findscore)
 
+    function handleChange(e) {
+        const { name, value, checked } = e.target
+        setFormData(prev => {
+            return {
+                ...prev,
+                [name]: value,
+            }
+        })
+    }
 
-        <main className={startquiz ? "quest-page" : "main"}>
+    
+    const selectedAnswers = Object.values(formData)
 
-            <img className="blob-image" alt="" src={blob}></img>
-            <img className="blob-image1" alt="" src={blob1}></img>
+    function collectScore(e) {
+        e.preventDefault()
+        if(!findscore){
+        setfindScore(true)
+       let total_score =0
+        const selectedAnswers = Object.values(formData)
 
-            {startquiz ?
+        for (let i= 0; i<selectedAnswers.length; i++) {
+
+            if (correct_answers.includes(selectedAnswers[i])) {
+               total_score =total_score+1
+                }
+      }
+        setScore(total_score)
+    }
+        else{
+            setStart(false)
+            setScore(0)
+            setNextgame(true)
+            setFormData([])
+            setfindScore(false)
+          
+            }
+        
+    }
+
+    return (
+        <main className={start ? "quest-page" : "main-page"}>
+
+           
+
+            {start ?
+            <>
+                   <img className="blob-image" alt="" src={blob_small}></img>
+                   <img className="blob-image1" alt="" src={blob1_small}></img>
                 <div >
-                    <form onSubmit={collectScore}>
-                        {questelements}
-                        <button type="submit">Submit</button>
+                    <form className="form" onSubmit={collectScore}>
+                        {questions.map(question => {
+                            return (
+                                <div className="question">
+                                    <p>{question.question}</p>
+                                    <div>
+                                        <div className="choices">
+                                            {question.incorrect_answers.map((option, index) => {
+                                                let corr = option === question.correct_answer ? true : false
+                                                let sel = selectedAnswers.includes(option)
+                                                const radio_name = question.id
+                                                const style = {
+                                                    backgroundColor: corr && findscore ? "#94D7A2" : findscore && sel && !corr ? "#F8BCBC" : ":#4D5B9E;"
+
+                                                }
+                                                return (
+
+                                                    <div className="option">
+
+
+                                                        <input
+                                                            id={`${radio_name}${index}`}
+                                                            key={index}
+                                                            type="radio"
+                                                            value={option}
+                                                            name={question.id}
+                                                            // checked={formData.radio_name === `${option}` }
+                                                            onChange={handleChange}
+
+                                                        />
+                                                        <label style={style} htmlFor={`${radio_name}${index}`}>
+                                                            {option}
+                                                        </label>
+                                                    </div>
+                                                )
+                                            })}
+                                        </div>
+                                        <hr />
+
+                                    </div>
+                                    
+                                </div>
+                              
+                            )
+                        })}
+                    
+                        <div className="score-section">
+                        {findscore && <p>You scored {score}/5 correct answers</p> }
+                        <button className={findscore? "start-button small-button":"start-button small-button btn "}type="submit">{!findscore ? "Check Answers" : "play again"}</button>
+                        </div>
                     </form>
                 </div>
+                </>
 
                 :
+                <>
+                <img className="blob-image" alt="" src={blob}></img>
+                <img className="blob-image1" alt="" src={blob1}></img>
                 <div >
                     <h1>Quizzical</h1>
                     <p>Some description if needed</p>
-                    <button onClick={startQuiz} className="start-button">Start Quiz</button>
+                    <button onClick={startQuiz} className="start-button ">Start Quiz</button>
 
                 </div>
+                </>
 
 
             }

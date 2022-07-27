@@ -19,7 +19,7 @@ main {
    
     
 }
-.main{
+.main-page{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -36,7 +36,7 @@ main {
     position: absolute;
     top: 0;
     right: 0;
-    /* z-index: 10; */
+
 
 }
 
@@ -44,7 +44,7 @@ main {
     position: absolute;
     bottom: 0;
     left: 0;
-    /* z-index:11 */
+
 
 }
 
@@ -63,23 +63,67 @@ main {
     color: #293264;
     font-family: 'Karla';
     font-weight: 700;
-    margin: 20px 0;
+    margin-bottom: 25px;
+ 
 
 }
 input{
-    /* appearance: none; */
+    appearance: none;
 }
-.btn{
-    display: inline-flex;
-    min-width: 10ch;
-    padding: 4px ;
-    border-radius: 7.94239px; 
-    align-items: center;
-    justify-content: center;
-    background: #F5F7FB;
-    ;
- 
-    }
+
 hr{
     border: 0.794239px solid #DBDEF0;
+}
+
+.choices{
+  
+    display: flex;
+    width: auto;
+    gap:10px
+
+    
+}
+.option{
+ display: flex;
+ height: 20px;
+ align-items: center;
+    justify-content: center;
+   
+   
+}
+
+label{
+    font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 10.24px;
+}
+.btn{
+  position: fixed;
+           left: 45%;
+          
+    
+}
+input[type='radio'] +label{
+    
+     background: #F5F7FB;
+     border: 0.794239px solid #4D5B9E;
+    padding: 4px 20px;
+    border-radius: 7.94239px; 
+}
+
+input[type='radio']:checked  + label {
+  border:none;
+   background:#4D5B9E;
+    
+}
+.score-section{
+    display: inline-flex;
+    gap :100px
+    
+}
+.small-button{
+    width:120px;
+    height: 35px;
+    font-size: 10px;
 }
