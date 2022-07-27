@@ -18,9 +18,7 @@ let eff=0
     const correct_answers = questions.map(elem => elem.correct_answer)
 
     React.useEffect(function () {
-        eff= eff+1
-        console.log("Effect ran",eff)
-        fetch("https://opentdb.com/api.php?amount=5&type=multiple")
+          fetch("https://opentdb.com/api.php?amount=5&type=multiple")
             .then(res => res.json())
             .then(data => setQuestions(data.results))
             
